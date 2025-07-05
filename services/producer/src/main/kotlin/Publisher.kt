@@ -7,7 +7,7 @@ import meshkit.config.catalog.CatalogInfo
 import java.time.Duration
 import java.util.*
 
-fun main(args: Array<String>) {
+fun main() {
     val appConfig = readConfigFile<AppConfig>("/app-config.yaml")
     val catalogInfo = CatalogInfo.readCatalogInfo()
     val options = Options.Builder()

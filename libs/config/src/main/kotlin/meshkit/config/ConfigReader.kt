@@ -1,7 +1,6 @@
 package meshkit.config
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
-import com.sksamuel.hoplite.ExperimentalHoplite
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.addResourceSource
 
