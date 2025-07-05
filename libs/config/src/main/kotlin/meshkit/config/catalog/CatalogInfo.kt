@@ -1,4 +1,6 @@
-package meshkit.config.entity
+package meshkit.config.catalog
+
+import meshkit.config.ConfigReader
 
 /**
  * Data classes for Backstage Software Catalog Component entity, compatible with Hoplite.
@@ -18,12 +20,20 @@ enum class EntityKind {
     Policy
 }
 
-data class Entity(
+data class CatalogInfo(
     val apiVersion: String,
     val kind: EntityKind = EntityKind.Component,
     val metadata: Metadata,
     val spec: ComponentSpec
-)
+) {
+    companion object {
+        fun readCatalogInfo(): CatalogInfo {
+            return ConfigReader()
+                .addResourceSource("/catalog-info.yaml")
+                .read<CatalogInfo>()
+        }
+    }
+}
 
 data class Metadata(
     val name: String,

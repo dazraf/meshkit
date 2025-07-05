@@ -1,5 +1,5 @@
 package io.dazraf
 
-import meshkit.config.entity.Entity
+import meshkit.config.catalog.CatalogInfo
 
-data class AppConfig(val component: Entity, val publishTopic: String)
+data class AppConfig(val publishTopic: String)
