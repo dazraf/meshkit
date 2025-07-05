@@ -13,4 +13,12 @@ class ConfigReaderTest {
             assertEquals("Hello, World!", value)
         }
     }
+
+    @Test
+    fun `that addFilePathSource adds a file path source and reads config`() {
+        val testFilePath = "src/test/resources/app-config.yaml"
+        val configReader = ConfigReader().addFilePathSource(testFilePath)
+        val config = configReader.read<ConfigReaderTest.AppConfig>()
+        assertEquals("Hello, World!", config.value)
+    }
 }
