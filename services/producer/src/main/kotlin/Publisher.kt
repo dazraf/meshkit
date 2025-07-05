@@ -1,0 +1,30 @@
+package io.dazraf
+
+import io.nats.client.Nats
+import io.nats.client.Options
+import meshkit.config.ConfigReader
+import java.time.Duration
+import java.util.*
+
+fun main(args: Array<String>) {
+    val config = ConfigReader(listOf("/app-config.yml")).read<AppConfig>()
+    val options = Options.Builder()
+        .server("nats://localhost:4222")
+        .connectionName(config.component.metadata.name)
+        .build()
+    try {
+        Nats.connect(options).use { nc ->
+            while (true) {
+                val payload = "payload @ ${Date()}"
+
+                println(payload)
+
+                nc.publish(config.publishTopic, payload.toByteArray())
+                nc.flush(Duration.ofSeconds(5))
+                Thread.sleep(1000)
+            }
+        }
+    } catch (exp: Exception) {
+        exp.printStackTrace()
+    }
+}

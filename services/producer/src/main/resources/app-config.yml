@@ -1,0 +1,15 @@
+publishTopic: consumer
+component:
+  apiVersion: backstage.io/v1alpha1
+  kind: Component
+  metadata:
+    namespace: meshkit
+    name: producer-service
+    description: Produces a stream of time stamps
+    tags:
+      - kotlin
+  spec:
+    type: website
+    lifecycle: production
+    owner: artist-relations-team
+    system: public-websites

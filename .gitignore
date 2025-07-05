@@ -1,0 +1,6 @@
+**/.gradle
+**/.kotlin
+.idea
+build
+services/*/build
+libs/*/build

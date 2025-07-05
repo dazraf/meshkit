@@ -20,15 +20,6 @@ services:
     labels:
       org.label-schema.group: "nats"
 
-  nui:
-    image: ghcr.io/nats-nui/nui:edge
-    volumes:
-      - ./db:/db
-    ports:
-      - "31312:31311" 
-    depends_on:
-      - nats
-
   surveyor:
     image: natsio/nats-surveyor:${SURVEYOR_DOCKER_TAG}
     container_name: nats-surveyor
