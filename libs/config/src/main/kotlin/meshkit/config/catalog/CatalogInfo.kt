@@ -28,9 +28,11 @@ data class CatalogInfo(
 ) {
     companion object {
         fun readCatalogInfo(): CatalogInfo {
-            return ConfigReader()
-                .addResourceSource("/catalog-info.yaml")
-                .read<CatalogInfo>()
+            return readCatalogInfo("/catalog-info.yaml")
+        }
+
+        fun readCatalogInfo(resourcePath: String): CatalogInfo {
+            return ConfigReader.readConfigFile(resourcePath)
         }
     }
 }
