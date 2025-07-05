@@ -1,0 +1,96 @@
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+
+services:
+  nats:
+    image: nats:${NATS_DOCKER_TAG:-latest}
+    container_name: nats-server
+    restart: always
+    ports:
+      - "4222:4222"  # Client connections
+      - "8222:8222"  # HTTP management/monitoring port
+      - "6222:6222"  # Routing port for clustering
+    command: "--http_port 8222"
+    networks:
+      - app-network
+    labels:
+      org.label-schema.group: "nats"
+
+  nui:
+    image: ghcr.io/nats-nui/nui:edge
+    volumes:
+      - ./db:/db
+    ports:
+      - "31312:31311" 
+    depends_on:
+      - nats
+
+  surveyor:
+    image: natsio/nats-surveyor:${SURVEYOR_DOCKER_TAG}
+    container_name: nats-surveyor
+    ports:
+      - "7777:7777"
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # When both USER/PASS and CREDS are passed
+      # the USER/PASS takes priority
+      - ${NATS_SURVEYOR_CREDS:-/dev/null}:/etc/surveyor/SYS.creds
+      - ./observations:/observations
+      - ./jetstream:/jetstream
+    environment:
+      - NATS_SURVEYOR_CREDS=/etc/surveyor/SYS.creds
+      - NATS_SURVEYOR_USER  
+      - NATS_SURVEYOR_PASSWORD
+      - NATS_SURVEYOR_SERVERS
+      - NATS_SURVEYOR_SERVER_COUNT
+    command: --count ${NATS_SURVEYOR_SERVER_COUNT} -s "${NATS_SURVEYOR_SERVERS}" --accounts --observe /observations --jetstream /jetstream
+    networks:
+      - app-network
+    labels:
+      org.label-schema.group: "nats"
+    depends_on:
+      - nats
+
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_DOCKER_TAG}
+    container_name: prometheus
+    restart: always
+    user: "65534:65534"  # Run as nobody:nobody to match Prometheus default
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - app-network
+    labels:
+      org.label-schema.group: "nats"
+    depends_on:
+      - surveyor
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_DOCKER_TAG}
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - app-network
+    labels:
+      org.label-schema.group: "nats"
+    depends_on:
+      - prometheus
