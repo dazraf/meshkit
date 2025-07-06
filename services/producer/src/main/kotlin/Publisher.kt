@@ -9,6 +9,7 @@ import java.util.*
 
 fun main() {
     val appConfig = readConfigFile<AppConfig>("/app-config.yaml")
+    println("publishing to ${appConfig.consumerService}")
     val catalogInfo = CatalogInfo.readCatalogInfo()
     val options = Options.Builder()
         .server("nats://localhost:4222")
@@ -21,7 +22,7 @@ fun main() {
 
                 println(payload)
 
-                nc.publish(appConfig.publishTopic, payload.toByteArray())
+                nc.publish(appConfig.consumerService, payload.toByteArray())
                 nc.flush(Duration.ofSeconds(5))
                 Thread.sleep(1000)
             }

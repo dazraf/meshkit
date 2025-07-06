@@ -34,4 +34,18 @@ class CatalogInfoTest {
         }
 
     }
+
+    @Test
+    fun `can load dependsOn field as EntityReference objects from catalog-info yaml`() {
+        val info = readCatalogInfo()
+        val dependsOn = info.spec.dependsOn
+        assertNotNull(dependsOn)
+        val set = dependsOn!!.map { it.toString() }.toSet()
+        assertEquals(
+            setOf(
+                "component:meshkit/producer-service",
+                "component:meshkit/subscriber-service"
+            ), set
+        )
+    }
 }

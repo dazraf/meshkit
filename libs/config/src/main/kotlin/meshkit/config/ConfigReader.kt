@@ -3,6 +3,7 @@ package meshkit.config
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.addResourceSource
+import meshkit.config.catalog.EntityReference
 
 data class ConfigReader(val configSource: List<ConfigSource> = emptyList()) {
     companion object {
@@ -33,6 +34,7 @@ data class ConfigReader(val configSource: List<ConfigSource> = emptyList()) {
      */
     inline fun <reified T : Any> read(): T {
         return ConfigLoaderBuilder.default()
+            .addDecoder(EntityReference.EntityReferenceDecoder)
 //            .withExplicitSealedTypes()
             .apply {
                 configSource.forEach { source ->

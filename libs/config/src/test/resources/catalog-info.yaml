@@ -22,3 +22,6 @@ spec:
   lifecycle: production
   owner: artist-relations-team
   system: public-websites
+  dependsOn:
+    - component:meshkit/producer-service
+    - component:meshkit/subscriber-service

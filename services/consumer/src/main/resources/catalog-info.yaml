@@ -3,7 +3,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   namespace: meshkit
-  name: subscriber-service
+  name: consumer
   description: Consumes a stream of time stamps
   tags:
     - kotlin
